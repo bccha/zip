@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, ipcMain, dialog, BrowserWindow } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 const __dirname$1 = path.dirname(fileURLToPath(import.meta.url));
@@ -31,6 +31,13 @@ app.on("window-all-closed", () => {
     app.quit();
     win = null;
   }
+});
+ipcMain.handle("show-save-dialog", async () => {
+  const result = await dialog.showSaveDialog({
+    filters: [{ name: "Zip Files", extensions: ["zip"] }],
+    defaultPath: "archive.zip"
+  });
+  return result;
 });
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {

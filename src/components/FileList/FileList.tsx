@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ZipFileEntry } from '../../utils/zipHandler';
 import './FileList.css';
 
@@ -7,8 +8,10 @@ interface FileListProps {
 }
 
 export const FileList: React.FC<FileListProps> = ({ entries }) => {
+    const { t } = useTranslation();
+
     if (entries.length === 0) {
-        return <div className="file-list-empty">No files in archive.</div>;
+        return <div className="file-list-empty">{t('emptyList')}</div>;
     }
 
     // Simple formatting for bytes
@@ -25,10 +28,10 @@ export const FileList: React.FC<FileListProps> = ({ entries }) => {
             <table className="file-list-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Size</th>
-                        <th>Date</th>
+                        <th>{t('name')}</th>
+                        <th>{t('type')}</th>
+                        <th>{t('size')}</th>
+                        <th>{t('date')}</th>
                     </tr>
                 </thead>
                 <tbody>
