@@ -1,0 +1,43 @@
+.file-list-container {
+    overflow-y: auto;
+    height: 100%;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #1e1e1e;
+}
+
+.file-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #eee;
+    font-size: 14px;
+}
+
+.file-list-table th,
+.file-list-table td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid #333;
+}
+
+.file-list-table th {
+    background-color: #252526;
+    position: sticky;
+    top: 0;
+}
+
+.file-list-table tr:hover {
+    background-color: #2a2d2e;
+}
+
+.file-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-list-empty {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+}

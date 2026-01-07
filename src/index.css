@@ -1,0 +1,98 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5em;
+  margin-bottom: 2rem;
+  background: linear-gradient(to right, #646cff, #9089fc);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.status-bar {
+  margin: 1rem 0 2rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+  min-height: 24px;
+  font-family: monospace;
+}
+
+.status-bar.error {
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+}
+
+.status-bar.success {
+  color: #6bff95;
+  border: 1px solid #6bff95;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.card {
+  background-color: #1a1a1a;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 2px dashed #333;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.card:hover {
+  border-color: #646cff;
+  background-color: #202020;
+  transform: translateY(-2px);
+}
+
+.card h2 {
+  margin: 0;
+  color: #fff;
+}
+
+.card .icon {
+  font-size: 3rem;
+  margin: 1rem 0;
+}
+
+.card p {
+  color: #888;
+  margin: 0;
+}
