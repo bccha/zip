@@ -29,6 +29,8 @@ let win: BrowserWindow | null
 
 function createWindow() {
     win = new BrowserWindow({
+        width: 1200,
+        height: 880,
         icon: path.join(process.env.VITE_PUBLIC || '', 'electron-vite.svg'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -66,6 +68,13 @@ ipcMain.handle('show-save-dialog', async () => {
     const result = await dialog.showSaveDialog({
         filters: [{ name: 'Zip Files', extensions: ['zip'] }],
         defaultPath: 'archive.zip'
+    })
+    return result
+})
+
+ipcMain.handle('select-save-location', async (_event, defaultName) => {
+    const result = await dialog.showSaveDialog({
+        defaultPath: defaultName || 'extracted-file'
     })
     return result
 })

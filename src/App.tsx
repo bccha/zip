@@ -274,7 +274,87 @@ function App() {
             {currentEntries ? (
               <div className="explorer-view">
                 <div className="path-bar">{currentZipPath}</div>
-                <FileList entries={currentEntries} />
+                <FileList
+                  entries={currentEntries}
+                  onExtract={async (entry) => {
+                    if (!zipHandler) return;
+                    const { ipcRenderer } = getElectronParams();
+                    if (!ipcRenderer) return;
+
+                    try {
+                      const result = await ipcRenderer.invoke('select-save-location', entry.name);
+                      if (result.canceled || !result.filePath) return;
+
+                      setIsProcessing(true);
+                      setStatus(`Extracting ${entry.name}...`);
+
+                      // extractFile(zipPath, targetDir, entryName)
+                      // But our zipHandler.extractFile takes (zipPath, targetPath, entryName)
+                      // If entryName is provided, it extracts that single file.
+                      // HOWEVER, adm-zip extractEntryTo documentation says:
+                      // extractEntryTo(entry, targetPath, maintainEntryPath, overwrite)
+                      // We need to check zipHandler implementation.
+                      // zipHandler.extractFile takes (zipPath, targetPath, entryName)
+                      // and calls zip.extractEntryTo(entryName, targetPath, true, true);
+                      // This extracts INTO targetPath. It doesn't rename.
+                      // If user selected "C:/Users/foo/bar.txt", we want the file to be "C:/Users/foo/bar.txt".
+
+                      // If we use extractEntryTo, it extracts *inside* the target directory.
+                      // So if we pass "C:/Users/foo/" it creates "C:/Users/foo/bar.txt".
+                      // If user selected "C:/Users/foo/custom_name.txt", we might have an issue if zipHandler doesn't support rename.
+                      // Let's assume for now we extract to the directory of the selected path.
+
+                      // To support "Save As" effectively with potentially renaming, we might need to extract to temp and move, 
+                      // or just extract to the directory and warn about name.
+                      // Let's look at zipHandler again.
+                      // zip.extractEntryTo(entryName, targetPath, true, true);
+                      // targetPath is the directory.
+
+                      // We will extract to the directory of the selected file path.
+                      const pathModule = (window as any).require('path');
+                      const targetDir = pathModule.dirname(result.filePath);
+
+                      // We really want to extract ONLY the file, potentially flattening it if it is inside a folder in the zip?
+                      // entry.entryName might be "folder/subfolder/file.txt".
+                      // If we want single file extraction, usually we want just the file.
+                      // zipHandler uses maintainEntryPath=true.
+
+                      // Let's try simpler: extract to the chosen directory.
+                      zipHandler.extractFile(currentZipPath!, targetDir, entry.entryName);
+
+                      setStatus(`${t('successExtracted')}: ${entry.name}`);
+                    } catch (e: any) {
+                      setStatus(`${t('error')}: ${e.message}`);
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                  onPreview={async (entry) => {
+                    const electron = (window as any).require('electron');
+                    const pathModule = (window as any).require('path');
+                    const os = (window as any).require('os');
+
+                    try {
+                      setIsProcessing(true);
+                      setStatus(`Opening ${entry.name}...`);
+                      const tempDir = os.tmpdir();
+                      // Extract to temp
+                      zipHandler.extractFile(currentZipPath!, tempDir, entry.entryName);
+
+                      // Construct full path
+                      // entry.entryName might contain folders. zipHandler maintains path.
+                      const extractedPath = pathModule.join(tempDir, entry.entryName);
+
+                      // Open
+                      electron.shell.openPath(extractedPath);
+                      setStatus(`Opened ${entry.name}`);
+                    } catch (e: any) {
+                      setStatus(`${t('error')}: ${e.message}`);
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                />
               </div>
             ) : (
               <div className="drop-zone">

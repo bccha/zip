@@ -5,9 +5,11 @@ import './FileList.css';
 
 interface FileListProps {
     entries: ZipFileEntry[];
+    onExtract: (entry: ZipFileEntry) => void;
+    onPreview: (entry: ZipFileEntry) => void;
 }
 
-export const FileList: React.FC<FileListProps> = ({ entries }) => {
+export const FileList: React.FC<FileListProps> = ({ entries, onExtract, onPreview }) => {
     const { t } = useTranslation();
 
     if (entries.length === 0) {
@@ -32,11 +34,16 @@ export const FileList: React.FC<FileListProps> = ({ entries }) => {
                         <th>{t('type')}</th>
                         <th>{t('size')}</th>
                         <th>{t('date')}</th>
+                        <th>{t('action') || 'Action'}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {entries.map((entry) => (
-                        <tr key={entry.entryName}>
+                        <tr
+                            key={entry.entryName}
+                            onDoubleClick={() => !entry.isDirectory && onPreview(entry)}
+                            className={entry.isDirectory ? 'is-directory' : 'is-file'}
+                        >
                             <td className="file-name">
                                 <span className="icon">{entry.isDirectory ? '📁' : '📄'}</span>
                                 {entry.name || entry.entryName}
@@ -44,6 +51,17 @@ export const FileList: React.FC<FileListProps> = ({ entries }) => {
                             <td>{entry.isDirectory ? 'Folder' : 'File'}</td>
                             <td>{entry.isDirectory ? '-' : formatBytes(entry.size)}</td>
                             <td>{entry.date ? new Date(entry.date).toLocaleDateString() : '-'}</td>
+                            <td>
+                                <button
+                                    className="action-btn"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onExtract(entry);
+                                    }}
+                                >
+                                    ⬇️
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
